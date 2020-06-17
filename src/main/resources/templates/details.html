@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+	<header th:replace="layout/layout :: header"></header>
+
+	<div class="container py-4">
+
+		<div class="card bg-light">
+			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-body">
+
+				<h4 class="card-title">
+					<a class="btn btn-primary btn-xs"
+						th:href="@{'/cart/form/' + ${userSystem.id}}"
+						th:text="'Crear Carro de Compra'"></a>
+				</h4>
+
+				<img th:if="${#strings.length(userSystem.photo) > 0}"
+					class="img-thumbnail rounded float-left" style="max-width: 25%;"
+					th:src="@{'/uploads/' + ${userSystem.photo}}" th:alt="${userSystem.photo}" />
+
+				<ul class="list-group">
+					<li class="list-group-item active" th:text="${userSystem.name}"></li>
+					<li class="list-group-item" th:text="${userSystem.lastName}"></li>
+					<li class="list-group-item" th:text="${userSystem.email}"></li>
+					<li class="list-group-item" th:text="${userSystem.createAt}"></li>
+				</ul>
+
+				<div th:if="${#lists.isEmpty(userSystem.carts)}"
+					class="alert alert-info my-4"
+					th:text="'No hay carros asignadas para el usuario ' + ${userSystem.name} + ' ' + ${userSystem.lastName}"></div>
+				
+				<div th:if="${not #lists.isEmpty(userSystem.carts)}">
+					<br><br><br><br><br><br>
+					<h3>
+						Listado de carros de compra
+					</h3>
+				</div>
+				
+
+				<table th:if="${not #lists.isEmpty(userSystem.carts)}"
+					class="table table-bordered table-striped my-4">
+					<thead class="thead-inverse">
+						<tr>
+							<th>Id de Referencia</th>
+							<th>Etiqueta</th>
+							<th>Observación</th>
+							<th>Fecha de Creación</th>
+							<th>Total</th>
+							<th>Ver</th>
+							<th>Editar</th>
+							<th>Eliminar</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cart: ${userSystem.carts}">
+							<td th:text="${cart.id}"></td>
+							<td th:text="${cart.cartName}"></td>
+							<td th:text="${cart.observation}"></td>
+							<td th:text="${cart.createAt}"></td>
+							<td th:text="${cart.total}"></td>
+							<td><a class="btn btn-primary btn-xs"
+								th:href="@{'/cart/details/' + ${cart.id}}" th:text="'Detalle'"></a></td>
+							<td><a class="btn btn-primary btn-xs"
+								th:href="@{'/cart/edit/' + ${cart.id}}" th:text="'Editar'"></a></td>
+							<td><a class="btn btn-danger btn-xs"
+								th:href="@{'/cart/delete/' + ${cart.id}}"
+								th:text="'Eliminar'"
+								onclick="return confirm('¿Estas seguro que desea eliminar el carro de compras?');"></a></td>
+						</tr>
+					</tbody>
+
+				</table>
+
+			</div>
+		</div>
+
+	</div>
+
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

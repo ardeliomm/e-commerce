@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+	<header th:replace="layout/layout :: header"></header>
+
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-body">
+				<h4 class="card-title">
+					<a class="btn btn-light btn-xs"
+						th:href="@{'/details/' + ${cart.user.id}}"
+						th:text="'&laquo; volver'"></a>
+				</h4>
+
+				<form th:action="@{/cart/form/}" th:object="${cart}" method="post">
+
+					<div class="form-group row">
+						<label for="user" class="col-sm-2 col-form-label"
+							th:text="'Usuario'"></label>
+						<div class="col-sm-6">
+							<input name="user"
+								th:value="${cart.user.name} + ' ' + ${cart.user.lastName}"
+								class="form-control" disabled='disabled' />
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="cartName" class="col-sm-2 col-form-label"
+							th:text="Etiqueta"></label>
+						<div class="col-sm-6">
+							<input th:field="*{cartName}" class="form-control"></input>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="observation" class="col-sm-2 col-form-label"
+							th:text="Observación"></label>
+						<div class="col-sm-6">
+							<textarea th:field="*{observation}" class="form-control"></textarea>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label class="col-sm-2 col-form-label">Lista de productos</label>
+						<div class="col-sm-6">
+							<table class="table table-sm table-striped table-hover">
+								<thead>
+									<tr>
+										<th>Id</th>
+										<th>Nombre</th>
+										<th>Precio</th>
+									</tr>
+
+								</thead>
+								<tbody>
+									<tr th:each="product: ${products}">
+										<td th:text="${product.id}"></td>
+										<td th:text="${product.name}"></td>
+										<td th:text="${product.price}"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+
+					<div class="form-group row">
+						<label for="search_product" class="col-sm-2 col-form-label"
+							th:text="'Buscar producto'"></label>
+						<div class="col-sm-6">
+							<input type="text" name="search_product" id="search_product"
+								class="form-control" />
+						</div>
+					</div>
+
+					<table th:replace="cart/template-items :: itemsCart"></table>
+
+					<table id="loadItemProducts"
+						class="table table-sm table-striped table-hover">
+						<thead>
+							<tr>
+								<th>Nombre</th>
+								<th>Precio</th>
+								<th>Cantidad</th>
+								<th>Total</th>
+								<th>Eliminar</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item: ${cart.items}" th:id="'row_' + ${item.id}">
+								<td class="d-none"><input type="hidden"
+									th:value="${item.id}" name="item_id[]"></input></td>
+								<td th:text="${item.product.name}"></td>
+								<td th:text="${item.product.price}"></td>
+								<td><input type="number" th:value="${item.quantity}"
+									name="quantity[]" th:id="'quantity_' + ${item.id}"
+									class="form-control col-sm-4"
+									th:onchange="|itemsHelper.calcAmount('${item.id}',' ${item.product.price}', this.value);|" /></td>
+								<td><span th:id="'total_amount_' + ${item.id}"
+									th:text="${item.calcImport()}"></span></td>
+								<td><a href="#" class="btn btn-danger btn-xs"
+									th:onclick="|itemsHelper.deleteItemCart('${item.id}');|">x</a></td>
+							</tr>
+						</tbody>
+					</table>
+					<h5>
+						Total <span class="badge badge-secondary"
+							th:text="${cart.getTotal()}" id="gran_total">0</span>
+					</h5>
+
+					<div class="form-group row">
+						<div class="col-sm-6">
+							<input type="submit" th:value="${titulo}"
+								class="btn btn-secondary" />
+						</div>
+					</div>
+				</form>
+
+
+			</div>
+		</div>
+	</div>
+
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script th:replace="cart/js/autocomplete-products :: javascript"></script>
+</body>
+</html>
